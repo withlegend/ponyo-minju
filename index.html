@@ -1032,8 +1032,8 @@ document.querySelectorAll('.item-time').forEach(function(el) {
 });
 
 // ===== 편지 모달 =====
-// 9/18 오후 3시 이전에만 편지 모달 표시
-if (new Date() < new Date('2026-09-18T15:00:00+09:00')) {
+// 편지 모달 항상 표시
+if (true) {
   setTimeout(function() {
     document.getElementById('letter-overlay').classList.add('show');
   }, 700);
