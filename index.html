@@ -441,32 +441,142 @@
   }
   .env-flap.open { transform: rotateX(-175deg); }
   #env-hint { margin-top:16px; color:white; font-size:0.9rem; opacity:0.88; }
+  /* ===== 먼지 파티클 ===== */
+  #envelope-wrap { position:relative; display:inline-block; }
+  .dust-particle {
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    animation: dustFloat linear forwards;
+  }
+  @keyframes dustFloat {
+    0%   { opacity:0.7; transform: translate(0,0) scale(1); }
+    60%  { opacity:0.4; }
+    100% { opacity:0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+  }
 
   #password-wrap {
-    background:white; border-radius:20px;
+    background: linear-gradient(160deg,#d4b896,#c4a070);
+    border-radius:4px;
     padding:30px 28px; text-align:center;
-    box-shadow:0 12px 40px rgba(255,107,157,0.3);
+    box-shadow: 0 8px 28px rgba(80,40,0,0.35), inset 0 0 20px rgba(80,40,0,0.12);
+    border: 2px solid #8b6340;
     width:280px; animation: letterIn 0.4s ease;
+    background-image: repeating-linear-gradient(
+      120deg, transparent, transparent 18px,
+      rgba(100,60,10,0.04) 18px, rgba(100,60,10,0.04) 19px
+    ), linear-gradient(160deg,#d4b896,#c4a070);
   }
-  .pw-label { font-size:0.95rem; font-weight:700; color:#ff6b9d; margin-bottom:16px; }
+  .pw-label { font-size:0.95rem; font-weight:700; color:#4a2e0e; margin-bottom:16px; text-shadow: 0 1px 2px rgba(255,220,160,0.4); }
   #pw-input {
     width:100%; text-align:center;
     font-size:1.6rem; letter-spacing:10px;
-    border:2px solid #ffb3cc; border-radius:12px;
-    padding:10px; outline:none; color:#333;
+    border:2px solid #8b6340; border-radius:3px;
+    padding:10px; outline:none;
+    color:#3a2008;
+    background: #e8d5b0;
     transition:border-color 0.2s;
   }
-  #pw-input:focus { border-color:#ff6b9d; }
-  #pw-input.shake { animation:shake 0.42s ease; border-color:#ff4444; }
+  #pw-input:focus { border-color:#5a3510; background:#f0dfc0; }
+  #pw-input.shake { animation:shake 0.42s ease; border-color:#7a2000; }
   #pw-btn {
     margin-top:14px; width:100%; padding:12px;
-    background:linear-gradient(135deg,#ff8c69,#ff6b9d);
-    color:white; border:none; border-radius:12px;
+    background: linear-gradient(135deg,#8b6340,#6b4420);
+    color:#f0dfc0; border:none; border-radius:3px;
     font-size:0.95rem; font-weight:700; cursor:pointer;
     transition:opacity 0.2s;
+    box-shadow: inset 0 1px 0 rgba(255,220,160,0.2);
   }
   #pw-btn:hover { opacity:0.85; }
   #pw-error { margin-top:9px; font-size:0.8rem; color:#ff4444; min-height:18px; }
+  /* ===== 편지 접기 버튼 ===== */
+  /* 편지 읽는 동안 봉투 상단 미니 대기 */
+  #envelope-wrap.letter-open {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.28);
+    transform-origin: top center;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 5;
+    animation: none;
+  }
+  /* 종이접기 — 중앙(50%) 기준, 아랫부분이 위로 올라와 포개지는 연출 */
+  @keyframes fullFoldAnim {
+    0%   { transform: perspective(700px) rotateX(0deg);    opacity: 1; }
+    /* 아랫부분이 앞으로 들리며 중앙 기준으로 접힘 */
+    35%  { transform: perspective(700px) rotateX(-87deg);  opacity: 1; }
+    45%  { transform: perspective(700px) rotateX(-90deg);  opacity: 0.4; }
+    58%  { transform: perspective(700px) rotateX(-180deg); opacity: 0; }
+    /* 접힌 종이가 봉투로 날아가기 */
+    68%  { transform: scaleY(0.04) scaleX(0.65) translateY(0);       opacity: 0; }
+    100% { transform: scaleY(0.01) scaleX(0.15) translateY(-340px);  opacity: 0; }
+  }
+  #letter-paper.full-fold {
+    animation: fullFoldAnim 3.8s cubic-bezier(0.35, 0, 0.65, 1) forwards;
+    transform-origin: 50% 50%;
+    backface-visibility: hidden;
+    overflow: hidden !important;
+  }
+  /* 편지접기 버튼 등장 팝 */
+  @keyframes foldBtnPop {
+    0%   { transform:scale(0.2); opacity:0; }
+    55%  { transform:scale(1.3);  opacity:1; }
+    75%  { transform:scale(0.88); }
+    90%  { transform:scale(1.08); }
+    100% { transform:scale(1);    opacity:1; }
+  }
+  #fold-btn {
+    display:block; margin:20px auto 4px;
+    background:linear-gradient(135deg,#8b6340,#6b4420);
+    color:#f0dfc0; border:none; border-radius:3px;
+    padding:10px 28px; font-size:0.9rem; font-weight:700;
+    cursor:pointer; transition:opacity 0.2s;
+    box-shadow: 0 0 0 3px rgba(200,150,80,0.4);
+  }
+  #fold-btn.pop { animation: foldBtnPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  #fold-btn:hover { opacity:0.85; }
+  /* ===== 먼지털기 ===== */
+  #dust-clean-btn {
+    display:none; margin-top:14px;
+    background:linear-gradient(135deg,#8b6340,#6b4420);
+    color:#f0dfc0; border:none; border-radius:3px;
+    padding:10px 28px; font-size:0.9rem; font-weight:700; cursor:pointer;
+  }
+  #dust-clean-hint { display:none; margin-top:8px; color:white; font-size:0.85rem; opacity:0.9; }
+  #dust-canvas { position:absolute; top:0; left:0; width:220px; height:150px; cursor:crosshair; z-index:10; border-radius:2px 2px 8px 8px; }
+  /* ===== 편지 B 비밀번호 ===== */
+  #pw-b-wrap {
+    background:white; border-radius:20px;
+    padding:30px 28px; text-align:center;
+    box-shadow:0 12px 40px rgba(255,107,157,0.3);
+    width:280px; animation:letterIn 0.4s ease;
+  }
+  .pw-b-label { font-size:0.95rem; font-weight:700; color:#ff6b9d; margin-bottom:16px; }
+  #pw-b-input {
+    width:100%; text-align:center; font-size:1.6rem; letter-spacing:10px;
+    border:2px solid #ffb3cc; border-radius:12px;
+    padding:10px; outline:none; color:#333; transition:border-color 0.2s;
+  }
+  #pw-b-input:focus { border-color:#ff6b9d; }
+  #pw-b-input.shake { animation:shake 0.42s ease; border-color:#ff4444; }
+  #pw-b-btn {
+    margin-top:14px; width:100%; padding:12px;
+    background:linear-gradient(135deg,#ff8c69,#ff6b9d);
+    color:white; border:none; border-radius:12px;
+    font-size:0.95rem; font-weight:700; cursor:pointer; transition:opacity 0.2s;
+  }
+  #pw-b-btn:hover { opacity:0.85; }
+  #pw-b-error { margin-top:9px; font-size:0.8rem; color:#ff4444; min-height:18px; }
+  /* ===== 편지 B ===== */
+  #letter-b-wrap { width:min(340px,90vw); animation:letterIn 0.5s ease; }
+  #letter-b-paper {
+    background:#fff5f8; border-radius:14px;
+    padding:28px 24px 24px; max-height:68vh; overflow-y:auto;
+    box-shadow:0 6px 30px rgba(255,107,157,0.2);
+    border:1.5px solid #ffd6e8;
+  }
 
   #letter-wrap { width:min(340px,90vw); animation:letterIn 0.5s ease; }
   #letter-close-btn {
@@ -1047,15 +1157,46 @@ document.querySelectorAll('.item-time').forEach(function(el) {
   if (mSingle) { el.textContent = mSingle[2]; }
 });
 
+// ===== 먼지 파티클 =====
+var dustTimer = null;
+var dustColors = ['#c8a06a','#a07840','#8b6340','#d4b896','#b89060','#e0c8a0','#6b4c2a'];
+function spawnDust() {
+  var wrap = document.getElementById('envelope-wrap');
+  if (!wrap) return;
+  var p = document.createElement('div');
+  p.className = 'dust-particle';
+  var size = Math.random() * 4 + 2;
+  var x = Math.random() * 240 - 10;
+  var y = Math.random() * 160 + 10;
+  var dx = (Math.random() - 0.5) * 60;
+  var dy = -(Math.random() * 50 + 20);
+  var dur = Math.random() * 1.8 + 1.2;
+  p.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+x+'px;top:'+y+'px;background:'+dustColors[Math.floor(Math.random()*dustColors.length)]+';--dx:'+dx+'px;--dy:'+dy+'px;animation-duration:'+dur+'s;';
+  wrap.appendChild(p);
+  setTimeout(function(){ p.remove(); }, dur * 1000);
+}
+function startDust() {
+  if (dustTimer) return;
+  dustTimer = setInterval(function() {
+    for (var i=0; i<2; i++) spawnDust();
+  }, 300);
+}
+function stopDust() {
+  clearInterval(dustTimer);
+  dustTimer = null;
+}
+
 // ===== 편지 모달 =====
 // 편지 모달 항상 표시
 if (true) {
   setTimeout(function() {
     document.getElementById('letter-overlay').classList.add('show');
+    startDust();
   }, 700);
 }
 
 function openEnvelope() {
+  stopDust();
   document.getElementById('env-flap').classList.add('open');
   document.getElementById('envelope').style.pointerEvents = 'none';
   setTimeout(function() {
@@ -1070,12 +1211,32 @@ function checkPw() {
   if (val === '0909') {
     document.getElementById('password-wrap').style.display = 'none';
     document.getElementById('letter-wrap').style.display = 'block';
+    // 봉투를 상단에 미니로 대기
+    var ew = document.getElementById('envelope-wrap');
+    ew.style.display = 'block';
+    ew.classList.add('letter-open');
+    // 편지 맨 밑까지 읽어야 '편지 접기' 버튼 표시
+    setTimeout(function() {
+      var paper = document.getElementById('letter-paper');
+      function checkScroll() {
+        if (paper.scrollTop + paper.clientHeight >= paper.scrollHeight - 8) {
+          var btn = document.getElementById('fold-btn');
+          btn.style.display = 'block';
+          btn.classList.remove('pop');
+          void btn.offsetWidth; // reflow로 애니메이션 재시작
+          btn.classList.add('pop');
+          paper.removeEventListener('scroll', checkScroll);
+        }
+      }
+      paper.addEventListener('scroll', checkScroll);
+      checkScroll(); // 편지가 짧아서 스크롤 불필요한 경우 즉시 표시
+    }, 100);
   } else {
     var inp = document.getElementById('pw-input');
     inp.classList.remove('shake');
     void inp.offsetWidth;
     inp.classList.add('shake');
-    document.getElementById('pw-error').textContent = 'ㅡ3ㅡ 민주는 바부야?';
+    document.getElementById('pw-error').textContent = '여전히 바분가? ㅡ3ㅡ';
     setTimeout(function() { inp.classList.remove('shake'); inp.value = ''; inp.focus(); }, 480);
   }
 }
@@ -1083,6 +1244,17 @@ function checkPw() {
 document.addEventListener('DOMContentLoaded', function() {
   var inp = document.getElementById('pw-input');
   if (inp) inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') checkPw(); });
+
+  // 방문 기록 → Google Sheets (Apps Script URL 입력 필요)
+  var VISIT_URL = 'https://script.google.com/macros/s/AKfycbxkUYnLMNWafmXRMmdmxA9QKzpiUFJEijhlpf7eMDC6yM20VfOH3unNcYoy7Vg-ADCw/exec';
+  if (VISIT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+    try {
+      var params = '?ua=' + encodeURIComponent(navigator.userAgent.slice(0,80))
+                 + '&ref=' + encodeURIComponent(document.referrer.slice(0,80))
+                 + '&t=' + Date.now();
+      fetch(VISIT_URL + params, { method: 'GET', mode: 'no-cors' }).catch(function(){});
+    } catch(e) {}
+  }
 });
 
 function closeLetter() {
@@ -1091,6 +1263,327 @@ function closeLetter() {
   el.style.opacity = '0';
   setTimeout(function() { el.style.display = 'none'; el.style.opacity = ''; }, 320);
 }
+
+// ===== 편지 접기 & 먼지털기 =====
+var dustCleanDone = false;
+var lastProgressCheck = 0;
+
+function foldLetter() {
+  var lw    = document.getElementById('letter-wrap');
+  var paper = document.getElementById('letter-paper');
+  var ew    = document.getElementById('envelope-wrap');
+  document.getElementById('fold-btn').style.display = 'none';
+
+  var origH = paper.scrollHeight;
+  var origW = paper.offsetWidth;
+  var FDUR = 900;
+  var PBG  = '#fffef8';
+  var PBDR = '2px solid #333';
+
+  // 편지 클론을 래퍼에 담아 시작
+  var fc = document.createElement('div');
+  fc.style.cssText = 'position:relative;width:' + origW + 'px;height:' + origH + 'px;margin:0 auto;';
+  var pv = paper.cloneNode(true);
+  pv.style.position  = 'absolute';
+  pv.style.top       = '0';
+  pv.style.left      = '0';
+  pv.style.width     = '100%';
+  pv.style.maxHeight = 'none';
+  pv.style.overflowY = 'hidden';
+  pv.style.margin    = '0';
+  pv.scrollTop       = 0;
+  fc.appendChild(pv);
+  paper.parentNode.insertBefore(fc, paper);
+  paper.style.display = 'none';
+
+  var st = { w: origW, h: origH };
+  // 세로1 → 세로2 → 가로 → 봉투 투입
+  foldV(fc, st, pv, FDUR, PBG, PBDR, true, function() {
+    foldV(fc, st, null, FDUR, PBG, PBDR, false, function() {
+      foldH(fc, st, FDUR, PBG, PBDR, function() {
+        foldFly(fc, lw, paper, ew);
+      });
+    });
+  });
+}
+
+// 세로 접기: 아랫 절반이 위로 올라와 포개짐
+function foldV(fc, st, src, dur, bg, bdr, isFirst, cb) {
+  var w = st.w, h = st.h;
+  var half = Math.round(h / 2);
+
+  // 윗 절반 (고정)
+  var topDiv = document.createElement('div');
+  topDiv.style.cssText = 'position:absolute;top:0;left:0;width:' + w + 'px;height:' + half + 'px;' +
+    'overflow:hidden;background:' + bg + ';border:' + bdr + ';box-sizing:border-box;';
+  if (isFirst && src) {
+    var tc = src.cloneNode(true);
+    tc.style.cssText = 'position:absolute;top:0;left:0;width:100%;max-height:none;overflow:hidden;margin:0;';
+    topDiv.appendChild(tc);
+  }
+
+  // 아랫 절반 (접히는 부분) — preserve-3d로 앞/뒷면 분리
+  var botOuter = document.createElement('div');
+  botOuter.style.cssText = 'position:absolute;top:' + half + 'px;left:0;' +
+    'width:' + w + 'px;height:' + (h - half) + 'px;' +
+    'transform-origin:top center;transform-style:preserve-3d;' +
+    'transition:transform ' + (dur / 1000) + 's cubic-bezier(0.4,0,0.2,1);';
+
+  // 앞면: 텍스트 (접히면 뒤로 숨음)
+  var front = document.createElement('div');
+  front.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;' +
+    'overflow:hidden;backface-visibility:hidden;background:' + bg + ';';
+  if (isFirst && src) {
+    var bc = src.cloneNode(true);
+    bc.style.cssText = 'position:absolute;top:-' + half + 'px;left:0;width:100%;max-height:none;overflow:hidden;margin:0;';
+    front.appendChild(bc);
+  }
+
+  // 뒷면: 종이 뒷면 (접힌 후 보임)
+  var back = document.createElement('div');
+  back.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;' +
+    'background:' + bg + ';border:' + bdr + ';box-sizing:border-box;' +
+    'backface-visibility:hidden;transform:rotateX(180deg);';
+
+  botOuter.appendChild(front);
+  botOuter.appendChild(back);
+  fc.innerHTML = '';
+  fc.style.height = h + 'px';
+  fc.appendChild(topDiv);
+  fc.appendChild(botOuter);
+
+  requestAnimationFrame(function() { requestAnimationFrame(function() {
+    botOuter.style.transform = 'perspective(900px) rotateX(-180deg)';
+  }); });
+
+  setTimeout(function() {
+    st.h = half;
+    fc.innerHTML = '';
+    fc.style.height = half + 'px';
+    var res = document.createElement('div');
+    res.style.cssText = 'position:absolute;top:0;left:0;width:' + w + 'px;height:' + half + 'px;' +
+      'background:' + bg + ';border:' + bdr + ';box-sizing:border-box;';
+    fc.appendChild(res);
+    cb && cb();
+  }, dur + 100);
+}
+
+// 가로 접기: 오른쪽 절반이 왼쪽으로 포개짐
+function foldH(fc, st, dur, bg, bdr, cb) {
+  var w = st.w, h = st.h;
+  var half = Math.round(w / 2);
+
+  var leftDiv = document.createElement('div');
+  leftDiv.style.cssText = 'position:absolute;top:0;left:0;width:' + half + 'px;height:' + h + 'px;' +
+    'background:' + bg + ';border:' + bdr + ';box-sizing:border-box;';
+
+  var rightOuter = document.createElement('div');
+  rightOuter.style.cssText = 'position:absolute;top:0;left:' + half + 'px;' +
+    'width:' + half + 'px;height:' + h + 'px;' +
+    'transform-origin:center left;transform-style:preserve-3d;' +
+    'transition:transform ' + (dur / 1000) + 's cubic-bezier(0.4,0,0.2,1);';
+
+  var front2 = document.createElement('div');
+  front2.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;' +
+    'background:' + bg + ';backface-visibility:hidden;';
+  var back2 = document.createElement('div');
+  back2.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;' +
+    'background:' + bg + ';border:' + bdr + ';box-sizing:border-box;' +
+    'backface-visibility:hidden;transform:rotateY(180deg);';
+
+  rightOuter.appendChild(front2);
+  rightOuter.appendChild(back2);
+  fc.innerHTML = '';
+  fc.style.width = w + 'px';
+  fc.appendChild(leftDiv);
+  fc.appendChild(rightOuter);
+
+  requestAnimationFrame(function() { requestAnimationFrame(function() {
+    rightOuter.style.transform = 'perspective(900px) rotateY(-180deg)';
+  }); });
+
+  setTimeout(function() {
+    st.w = half;
+    fc.innerHTML = '';
+    fc.style.width = half + 'px';
+    var res = document.createElement('div');
+    res.style.cssText = 'position:absolute;top:0;left:0;width:' + half + 'px;height:' + h + 'px;' +
+      'background:' + bg + ';border:' + bdr + ';box-sizing:border-box;';
+    fc.appendChild(res);
+    cb && cb();
+  }, dur + 100);
+}
+
+// 접힌 종이 봉투로 투입
+function foldFly(fc, lw, paper, ew) {
+  // 봉투 뚜껑 열기
+  document.getElementById('env-flap').classList.add('open');
+
+  // 뚜껑 열리는 동안 대기 후 이동
+  setTimeout(function() {
+    var fcRect  = fc.getBoundingClientRect();
+    var envRect = document.getElementById('envelope').getBoundingClientRect();
+
+    // 봉투 중심까지 이동 거리
+    var dx = (envRect.left + envRect.width  / 2) - (fcRect.left + fcRect.width  / 2);
+    var dy = (envRect.top  + envRect.height / 2) - (fcRect.top  + fcRect.height / 2);
+
+    // 봉투 크기에 맞게 축소
+    var scale = Math.min(envRect.width / fcRect.width * 0.75, 0.25);
+
+    fc.style.transition = 'transform 0.65s cubic-bezier(0.4,0,0.6,1), opacity 0.2s ease 0.55s';
+    fc.style.transformOrigin = 'center center';
+    fc.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')';
+    fc.style.opacity = '0';
+
+    // 종이 들어간 후 뚜껑 닫기
+    setTimeout(function() {
+      document.getElementById('env-flap').classList.remove('open');
+    }, 500);
+
+    // 정리 및 먼지털기 전환
+    setTimeout(function() {
+      if (fc.parentNode) fc.parentNode.removeChild(fc);
+      paper.style.display = '';
+      lw.style.display = 'none';
+      ew.classList.remove('letter-open');
+      ew.style.display = '';
+      document.getElementById('envelope').onclick = null;
+      document.getElementById('envelope').style.pointerEvents = 'auto';
+      document.getElementById('env-hint').style.display = 'none';
+      document.getElementById('dust-clean-btn').style.display = 'inline-block';
+      startDust();
+    }, 950);
+  }, 450);
+}
+
+function startDustCleaning() {
+  stopDust();
+  document.getElementById('dust-clean-btn').style.display = 'none';
+  document.getElementById('dust-clean-hint').style.display = 'block';
+  var env = document.getElementById('envelope');
+  var canvas = document.getElementById('dust-canvas');
+  // canvas 크기 고정 (CSS와 동일)
+  canvas.width = 220;
+  canvas.height = 150;
+  canvas.style.display = 'block';
+  // 봉투 위에 먼지 레이어 그리기
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'rgba(85,50,12,0.90)';
+  ctx.fillRect(0, 0, 220, 150);
+  for (var i = 0; i < 800; i++) {
+    ctx.fillStyle = 'rgba(' + ((70+Math.random()*50)|0) + ',' + ((35+Math.random()*35)|0) + ',0,' + (0.25+Math.random()*0.5).toFixed(2) + ')';
+    ctx.fillRect(Math.random()*220, Math.random()*150, Math.random()*4+1, Math.random()*4+1);
+  }
+  var erasing = false;
+  function getPos(e) {
+    var r = canvas.getBoundingClientRect();
+    var scaleX = 220 / r.width;
+    var scaleY = 150 / r.height;
+    if (e.touches) return {x:(e.touches[0].clientX-r.left)*scaleX, y:(e.touches[0].clientY-r.top)*scaleY};
+    return {x:(e.clientX-r.left)*scaleX, y:(e.clientY-r.top)*scaleY};
+  }
+  function erase(e) {
+    if (!erasing) return;
+    var pos = getPos(e);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 16, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    // 200ms 간격 throttle
+    var now = Date.now();
+    if (now - lastProgressCheck > 200) {
+      lastProgressCheck = now;
+      checkCleanProgress(ctx);
+    }
+  }
+  canvas.addEventListener('mousedown', function(e){ erasing = true; erase(e); });
+  canvas.addEventListener('mousemove', erase);
+  canvas.addEventListener('mouseup', function(){ erasing = false; });
+  canvas.addEventListener('mouseleave', function(){ erasing = false; });
+  canvas.addEventListener('touchstart', function(e){ e.preventDefault(); erasing = true; erase(e); }, {passive:false});
+  canvas.addEventListener('touchmove', function(e){ e.preventDefault(); erase(e); }, {passive:false});
+  canvas.addEventListener('touchend', function(){ erasing = false; });
+}
+
+function checkCleanProgress(ctx) {
+  if (dustCleanDone) return;
+  var data = ctx.getImageData(0, 0, 220, 150).data;
+  var cleared = 0;
+  for (var i = 3; i < data.length; i += 4) { if (data[i] < 20) cleared++; }
+  // 전체 220x150=33000px 중 80% 이상 털어야 통과
+  if (cleared / 33000 > 0.50) {
+    dustCleanDone = true;
+    cleanComplete();
+  }
+}
+
+function cleanComplete() {
+  var canvas = document.getElementById('dust-canvas');
+  canvas.style.transition = 'opacity 0.8s';
+  canvas.style.opacity = '0';
+  setTimeout(function(){ canvas.style.display = 'none'; }, 800);
+  // 봉투 핑크로 전환
+  var envBody = document.querySelector('#envelope .env-body');
+  var envFlap = document.querySelector('#envelope .env-flap');
+  envBody.style.transition = 'background 1s ease, border-color 1s ease, box-shadow 1s ease';
+  envFlap.style.transition = 'background 1s ease, border-color 1s ease, box-shadow 1s ease';
+  envBody.style.background = 'linear-gradient(160deg,#ffe4ee,#fff5f0)';
+  envBody.style.backgroundImage = 'none';
+  envBody.style.border = '2.5px solid #ffb3cc';
+  envBody.style.boxShadow = 'none';
+  envFlap.style.background = '#ffd6e8';
+  envFlap.style.border = '2.5px solid #ffb3cc';
+  envFlap.style.boxShadow = 'none';
+  document.getElementById('envelope').style.filter = 'drop-shadow(0 10px 28px rgba(255,107,157,0.55))';
+  document.getElementById('dust-clean-hint').style.display = 'none';
+  // 힌트 텍스트 전환 (텍스트 먼저 바꾸고 표시)
+  var hint = document.getElementById('env-hint');
+  hint.textContent = '보고싶었어 여보♥';
+  hint.style.opacity = '0';
+  hint.style.display = 'block';
+  setTimeout(function() {
+    hint.style.transition = 'opacity 0.5s';
+    hint.style.opacity = '0.88';
+  }, 300);
+  // 텍스트 완전히 뜨고 1.5초 후에 클릭 활성화 (손가락/마우스 뗀 뒤)
+  setTimeout(function() {
+    var env = document.getElementById('envelope');
+    env.style.pointerEvents = 'auto';
+    env.onclick = openEnvelopeB;
+  }, 1500);
+}
+
+function openEnvelopeB() {
+  document.getElementById('env-flap').classList.add('open');
+  document.getElementById('envelope').style.pointerEvents = 'none';
+  setTimeout(function() {
+    document.getElementById('envelope-wrap').style.display = 'none';
+    document.getElementById('pw-b-wrap').style.display = 'block';
+    setTimeout(function(){ document.getElementById('pw-b-input').focus(); }, 120);
+  }, 600);
+}
+
+function checkPwB() {
+  var val = document.getElementById('pw-b-input').value;
+  if (val === '260909') {
+    document.getElementById('pw-b-wrap').style.display = 'none';
+    document.getElementById('letter-b-wrap').style.display = 'block';
+  } else {
+    var inp = document.getElementById('pw-b-input');
+    void inp.offsetWidth;
+    inp.classList.add('shake');
+    document.getElementById('pw-b-error').textContent = '여전히 바분가? ㅡ3ㅡ';
+    setTimeout(function(){ inp.classList.remove('shake'); inp.value = ''; inp.focus(); }, 480);
+  }
+}
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter') {
+    var pbw = document.getElementById('pw-b-wrap');
+    if (pbw && pbw.style.display === 'block') checkPwB();
+  }
+});
 </script>
 
 <!-- 편지 모달 -->
@@ -1102,8 +1595,11 @@ function closeLetter() {
     <div id="envelope" onclick="openEnvelope()">
       <div class="env-body">💌</div>
       <div class="env-flap" id="env-flap"></div>
+      <canvas id="dust-canvas" style="display:none"></canvas>
     </div>
     <p id="env-hint">꼬질꼬질</p>
+    <button id="dust-clean-btn" onclick="startDustCleaning()">먼지털기</button>
+    <p id="dust-clean-hint">먼지를 털어주세요</p>
   </div>
 
   <div id="password-wrap" style="display:none">
@@ -1127,6 +1623,21 @@ function closeLetter() {
 그러니까 내가 무얼 해주든, 어떤 마음을 전하든 절대 부담스럽게 생각하지 않았으면 좋겠어요. 민주답게, 귀엽게 웃으며 그저 예쁜 마음으로 편하게 받아주기만 하면 나는 그보다 더 행복할 수는 없을거예요.
 
 내게 요즘과 같은 행복한 나날들을 선물해준 너에게 정말 고마워요. 오늘도 학교 잘 다녀와요, 사랑해요. 💕</p>
+    </div>
+    <button id="fold-btn" onclick="foldLetter()" style="display:none">편지 접기</button>
+  </div>
+
+  <div id="pw-b-wrap" style="display:none">
+    <p class="pw-b-label">🔐 비밀번호를 입력해줘요</p>
+    <input id="pw-b-input" type="password" inputmode="numeric" maxlength="10" placeholder="••••••" />
+    <button id="pw-b-btn" onclick="checkPwB()">열기 💕</button>
+    <p id="pw-b-error"></p>
+  </div>
+
+  <div id="letter-b-wrap" style="display:none">
+    <div id="letter-b-paper">
+      <p class="letter-greeting">안녕 민주야! 💌</p>
+      <p class="letter-body">테스트테스트중</p>
     </div>
   </div>
 
