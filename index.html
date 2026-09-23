@@ -400,28 +400,44 @@
   #envelope {
     width:220px; height:150px; position:relative;
     cursor:pointer; margin:0 auto;
-    filter: drop-shadow(0 10px 28px rgba(255,107,157,0.55));
+    filter: drop-shadow(0 6px 18px rgba(80,50,20,0.45)) sepia(0.3);
     transition: transform 0.2s;
   }
-  #envelope:hover { transform: scale(1.06) rotate(-1.5deg); }
+  #envelope:hover { transform: scale(1.04) rotate(-1deg); }
   .env-body {
     position:absolute; width:100%; height:100%;
-    background: linear-gradient(160deg,#ffe4ee,#fff5f0);
-    border-radius: 4px 4px 14px 14px;
-    border: 2.5px solid #ffb3cc;
+    background: linear-gradient(160deg,#d4b896,#c9a87a,#bfa06e);
+    border-radius: 2px 2px 8px 8px;
+    border: 2px solid #8b6340;
+    box-shadow: inset 0 0 18px rgba(80,40,0,0.18), inset 2px 2px 6px rgba(0,0,0,0.10);
     display:flex; align-items:center; justify-content:center;
     font-size:2.8rem;
+    /* 얼룩/낡음 텍스처 */
+    background-image: repeating-linear-gradient(
+      120deg, transparent, transparent 18px,
+      rgba(100,60,10,0.04) 18px, rgba(100,60,10,0.04) 19px
+    ), linear-gradient(160deg,#d4b896,#bfa06e);
+  }
+  .env-body::after {
+    content:'';
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse at 30% 70%, rgba(80,40,0,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(60,30,0,0.08) 0%, transparent 50%);
+    border-radius: inherit;
+    pointer-events:none;
   }
   .env-flap {
-    position:absolute; top:-2.5px; left:-2.5px;
-    width:calc(100% + 5px); height:55%;
-    background:#ffd6e8;
-    border: 2.5px solid #ffb3cc; border-bottom:none;
+    position:absolute; top:-2px; left:-2px;
+    width:calc(100% + 4px); height:55%;
+    background: linear-gradient(180deg,#c4956a,#b8844f);
+    border: 2px solid #8b6340; border-bottom:none;
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top center;
     transform-style: preserve-3d;
     transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
     z-index:2;
+    /* 접힌 자국 */
+    box-shadow: inset 0 -4px 8px rgba(80,40,0,0.15);
   }
   .env-flap.open { transform: rotateX(-175deg); }
   #env-hint { margin-top:16px; color:white; font-size:0.9rem; opacity:0.88; }
@@ -1087,7 +1103,7 @@ function closeLetter() {
       <div class="env-body">💌</div>
       <div class="env-flap" id="env-flap"></div>
     </div>
-    <p id="env-hint">봉투를 클릭해봐요 💕</p>
+    <p id="env-hint">꼬질꼬질</p>
   </div>
 
   <div id="password-wrap" style="display:none">
