@@ -619,7 +619,7 @@
     <div class="countdown-label">민주 비행기 탑승까지</div>
     <div id="countdown-time" class="countdown-time">계산 중...</div>
   </div>
-  <div class="dates">공주님 오는날 : 2026년 9월 18일 (금) ~ 21일 (일)</div>
+  <div class="dates">공주님 다녀간 날 : 2026년 9월 18일 (금) ~ 22일 (화)</div>
 </div>
 
 <div class="tabs">
@@ -1116,9 +1116,15 @@ function updateCountdown() {
   const now = new Date();
   const el  = document.getElementById('countdown-time');
   const lbl = document.querySelector('.countdown-label');
+  const tripEnd = new Date('2026-09-22T10:55:00+09:00');
   if (now >= arrived) {
-    lbl.textContent = '';
-    el.textContent  = '드디어 만났어요! 많이 사랑해요💕';
+    lbl.textContent = '여행으로부터';
+    const diff = now - tripEnd;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    el.textContent = d + '일 ' + String(h).padStart(2,'0') + '시간 ' + String(m).padStart(2,'0') + '분 ' + String(s).padStart(2,'0') + '초 지났어요 🌊';
   } else if (now >= boarding) {
     lbl.textContent = '민주 비행기 탑승까지';
     el.textContent  = '🛫 민주가 하늘을 날고 있어요!';
@@ -1192,6 +1198,7 @@ if (true) {
   setTimeout(function() {
     document.getElementById('letter-overlay').classList.add('show');
     startDust();
+    drawDustLayer(); // 처음부터 먼지 묻은 봉투 표시
   }, 700);
 }
 
@@ -1452,22 +1459,21 @@ function foldFly(fc, lw, paper, ew) {
       document.getElementById('envelope').style.pointerEvents = 'auto';
       document.getElementById('env-hint').style.display = 'none';
       document.getElementById('dust-clean-btn').style.display = 'inline-block';
+      dustCleanDone = false; // 2라운드 먼지털기 활성화
       startDust();
+      drawDustLayer(); // 접힌 후에도 먼지 묻은 봉투 표시
     }, 950);
   }, 450);
 }
 
-function startDustCleaning() {
-  stopDust();
-  document.getElementById('dust-clean-btn').style.display = 'none';
-  document.getElementById('dust-clean-hint').style.display = 'block';
-  var env = document.getElementById('envelope');
+// 먼지 레이어 그리기 (인터랙션 없이 보여주기만)
+function drawDustLayer() {
   var canvas = document.getElementById('dust-canvas');
-  // canvas 크기 고정 (CSS와 동일)
   canvas.width = 220;
   canvas.height = 150;
   canvas.style.display = 'block';
-  // 봉투 위에 먼지 레이어 그리기
+  canvas.style.opacity = '1';
+  canvas.style.pointerEvents = 'none'; // 클릭은 봉투로 통과
   var ctx = canvas.getContext('2d');
   ctx.fillStyle = 'rgba(85,50,12,0.90)';
   ctx.fillRect(0, 0, 220, 150);
@@ -1475,6 +1481,17 @@ function startDustCleaning() {
     ctx.fillStyle = 'rgba(' + ((70+Math.random()*50)|0) + ',' + ((35+Math.random()*35)|0) + ',0,' + (0.25+Math.random()*0.5).toFixed(2) + ')';
     ctx.fillRect(Math.random()*220, Math.random()*150, Math.random()*4+1, Math.random()*4+1);
   }
+}
+
+function startDustCleaning() {
+  stopDust();
+  document.getElementById('dust-clean-btn').style.display = 'none';
+  document.getElementById('dust-clean-hint').style.display = 'block';
+  var canvas = document.getElementById('dust-canvas');
+  // 먼지 레이어 새로 그리기 (혹시 지워진 상태면 리셋)
+  drawDustLayer();
+  canvas.style.pointerEvents = 'auto'; // 이제 인터랙션 활성화
+  var ctx = canvas.getContext('2d');
   var erasing = false;
   function getPos(e) {
     var r = canvas.getBoundingClientRect();
@@ -1637,7 +1654,27 @@ document.addEventListener('keydown', function(e){
   <div id="letter-b-wrap" style="display:none">
     <div id="letter-b-paper">
       <p class="letter-greeting">안녕 민주야! 💌</p>
-      <p class="letter-body">테스트테스트중</p>
+      <p class="letter-body">너를 기다렸어요.
+편지를 적는 오늘은 26년 9월 22일, 민주가 떠난 날의 저녁이에요.
+
+어제 민주가 한 말이 기억이 나요. 선물은 비단 값진 물건 뿐 아닌, 편지나 다른 성의있는 모든것을 아우르는 말이라고 내게 알려줬거든요.
+그 관점에서 보면, 지금 민주가 보고있는 이 화면 마저도 어쩌면 너에게 선물이 됐을까요?
+민주가 보게 될지, 기억속에서 잊혀져갈지는 모르겠지만요 ㅎㅎㅎ
+
+4박5일간의 우리의 여행은 정말 즐거웠어요. 너의 사랑을 온몸으로 받을 수 있어서 정말 따뜻한 순간들이었어요. 그 시간들이 너무 따뜻하고, 지나가버림이 아쉬워서 지금 추가로 편지를 작성하나봐요.
+
+우리의 지나간 추억들은 시간과 함께 조금씩 연해지겠지만, 그래도 나는 기억할 것 같아요.
+물이 좋다며 해맑게 웃던 순간들,
+어둠이 무섭지만 그 속에서 밝은 별을 보며 별보다 더 밝게 웃던 네 모습,
+그리고 그런 너를 보는 것 만으로도 벅차올랐던 나의 감정들을요.
+
+이 기억들을 뒤로한 채, 우리는 다시 일상으로 복귀하겠죠. 또 한동안은 서로를 그리워하며 지내겠지요. 그래도 4박 5일 동안 네가 내게 채워준 사랑과 따뜻한 마음들이 너무 커서, 한동안은 이 기분좋은 여운으로 지낼 수 있을 것 같아요.
+
+마지막으로! 저번에도 한 말이지만, 다시 한 번 말하고싶어요.
+나를 만나러 여기까지 와줘서, 그리고 함께하는 내내 아낌없이 사랑을 표현해줘서 참 고마워요.
+비록 지금은 멀리 떨어져 있지만, 마음만은 늘 민주와 함께 있을게요.
+오늘 밤 피곤했을 텐데 따뜻하게 잘 자고, 예쁜 꿈꿔요.
+정말 많이 사랑해요.</p>
     </div>
   </div>
 
